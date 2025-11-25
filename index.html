@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyber Security Quiz - Class 8 & 9</title>
+    <style>
+      :root {
+        --primary-color: #2c3e50;
+        --accent-color: #3498db;
+        --success-color: #27ae60;
+        --error-color: #c0392b;
+        --bg-color: #ecf0f1;
+        --card-bg: #ffffff;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .neeri-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1; /* adjust as needed */
+        padding: 1rem;
+      }
+      .neeri-img img {
+        width:  10rem;
+        height: auto;
+      }
+      .quiz-container {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 650px;
+        padding: 30px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        margin-bottom: 5px;
+        font-size: 26px;
+      }
+
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background-color: var(--accent-color);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .question-box {
+        margin-bottom: 25px;
+      }
+
+      .question-text {
+        font-size: 19px;
+        color: #34495e;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+
+      .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .option-btn {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+        color: #495057;
+        position: relative;
+      }
+
+      .option-btn:hover:not([disabled]) {
+        background-color: #e2e6ea;
+        border-color: var(--accent-color);
+      }
+
+      /* Status Classes */
+      .option-btn.correct {
+        background-color: #d4edda;
+        border-color: var(--success-color);
+        color: var(--success-color);
+        font-weight: bold;
+      }
+
+      .option-btn.correct::after {
+        content: "✓";
+        position: absolute;
+        right: 20px;
+        font-weight: bold;
+      }
+
+      .option-btn.wrong {
+        background-color: #f8d7da;
+        border-color: var(--error-color);
+        color: var(--error-color);
+        opacity: 0.7;
+      }
+
+      .feedback-msg {
+        margin-top: 20px;
+        font-weight: bold;
+        min-height: 24px;
+        font-size: 18px;
+      }
+
+      .success-msg {
+        color: var(--success-color);
+      }
+      .error-msg {
+        color: var(--error-color);
+      }
+
+      .next-btn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+        display: none; /* Hidden initially */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .next-btn:hover {
+        background-color: #2980b9;
+      }
+
+      .result-screen {
+        display: none;
+      }
+
+      .score-display {
+        font-size: 48px;
+        color: var(--accent-color);
+        margin: 20px 0;
+        font-weight: bold;
+      }
+
+      /* Appreciation Animation (Pulse) */
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .appreciation-anim {
+        animation: pulse 0.4s ease-in-out;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="neeri-img">
+      <img src="/imgs/csir_neeri.png" alt="" />
+    </div>
+    <div class="quiz-container" id="quiz-box">
+      <h1>🛡️ Cyber Awareness Challenge</h1>
+      <p class="subtitle">Class 8 & 9 Fundamentals</p>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-text" id="question">Loading...</div>
+        <div class="options-grid" id="options"></div>
+      </div>
+
+      <div class="feedback-msg" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question ➜</button>
+    </div>
+
+    <div class="quiz-container result-screen" id="result-box">
+      <h1>Quiz Completed!</h1>
+      <p>Your Digital Safety Score:</p>
+      <div class="score-display" id="final-score">0 / 15</div>
+      <p id="final-message" style="font-size: 18px; color: #555"></p>
+      <button class="next-btn" style="display: inline-block" onclick="restartQuiz()">Restart Quiz ↺</button>
+    </div>
+
+    <script>
+      // --- DATA: 15 Questions for Class 8 & 9 ---
+      const quizData = [
+        {
+          question: "1. What is the primary goal of a 'Phishing' attack?",
+          options: ["To clean your computer of viruses", "To trick you into revealing passwords or personal data", "To make your internet speed faster", "To install a new video game"],
+          correct: 1,
+        },
+        {
+          question: "2. Which of the following is considered a 'Strong Password'?",
+          options: ["password123", "Rahul2010", "K#9m$P2v!qLz", "12345678"],
+          correct: 2,
+        },
+        {
+          question: "3. What does the 's' in 'https://' stand for?",
+          options: ["Speed", "Secure", "System", "Simple"],
+          correct: 1,
+        },
+        {
+          question: "4. What is a 'Digital Footprint'?",
+          options: [
+            "The trail of data you leave behind when using the internet",
+            "The size of your computer monitor",
+            "A type of virus that walks across screens",
+            "A fingerprint scanner on a laptop",
+          ],
+          correct: 0,
+        },
+        {
+          question: "5. Why should you avoid using free, public Wi-Fi for banking?",
+          options: [
+            "It is too slow for banking apps",
+            "It uses too much battery",
+            "Public Wi-Fi is often unsecured, allowing hackers to intercept data",
+            "Banks do not allow public Wi-Fi connections",
+          ],
+          correct: 2,
+        },
+        {
+          question: "6. What is 'Two-Factor Authentication' (2FA)?",
+          options: [
+            "Changing your password twice a day",
+            "Using two different computers",
+            "Requiring two forms of ID (like a password + a phone code) to login",
+            "Sharing your password with two friends",
+          ],
+          correct: 2,
+        },
+        {
+          question: "7. What is 'Malware'?",
+          options: [
+            "Software designed to protect your computer",
+            "Hardware parts like the mouse and keyboard",
+            "Malicious software designed to cause harm or steal data",
+            "A popular online video game",
+          ],
+          correct: 2,
+        },
+        {
+          question: "8. A stranger in an online game asks for your home address to send you a gift. What should you do?",
+          options: [
+            "Give them the address immediately",
+            "Give them your school address instead",
+            "Block the user, do not reply, and tell a trusted adult",
+            "Ask them to send a photo of the gift first",
+          ],
+          correct: 2,
+        },
+        {
+          question: "9. Why are software updates (Windows, Android, iOS) important?",
+          options: ["They change the look of the icons", "They patch security holes and fix vulnerabilities", "They make the battery drain faster", "They are only for adding new emojis"],
+          correct: 1,
+        },
+        {
+          question: "10. What is 'Cyberbullying'?",
+          options: [
+            "Helping someone with their homework online",
+            "Using digital tools to harass, threaten, or humiliate others",
+            "Playing video games competitively",
+            "Creating a group chat for school projects",
+          ],
+          correct: 1,
+        },
+        {
+          question: "11. You receive an email saying you won a lottery but must pay a fee to claim it. This is likely:",
+          options: ["A lucky day", "A standard bank procedure", "A Scam or Fraud", "A government grant"],
+          correct: 2,
+        },
+        {
+          question: "12. What is the safest setting for social media profiles (Instagram, Snapchat, etc.)?",
+          options: ["Public (Everyone can see)", "Private (Only approved friends can see)", "Open to friends of friends", "No privacy settings needed"],
+          correct: 1,
+        },
+        {
+          question: "13. Someone calls claiming to be from the bank and asks for the OTP sent to your phone. You should:",
+          options: ["Read the OTP to them slowly", "Hang up immediately; banks never ask for OTPs", "Ask them to call back later", "Text them the OTP instead"],
+          correct: 1,
+        },
+        {
+          question: "14. What is 'Ransomware'?",
+          options: [
+            "Software that helps you find lost files",
+            "A virus that locks your files and demands money to unlock them",
+            "Free software for school projects",
+            "A program that speeds up your PC",
+          ],
+          correct: 1,
+        },
+        {
+          question: "15. When using a public computer (library/cafe), what is the most important step before leaving?",
+          options: ["Turn off the monitor", "Clear the browser history only", "Log out of all accounts and close the browser", "Leave the tab open for the next person"],
+          correct: 2,
+        },
+      ];
+
+      // --- STATE ---
+      let currentQuestionIndex = 0;
+      let score = 0;
+
+      const appreciationPhrases = [
+        "Excellent! You're a Cyber Pro! 🛡️",
+        "Spot on! Great awareness! 🌟",
+        "Correct! You are staying safe! ✅",
+        "Awesome! That's the secure choice! 🚀",
+        "Perfect! Keep it up! 🏆",
+      ];
+
+      // --- DOM ELEMENTS ---
+      const questionEl = document.getElementById("question");
+      const optionsEl = document.getElementById("options");
+      const feedbackEl = document.getElementById("feedback");
+      const nextBtn = document.getElementById("next-btn");
+      const progressFill = document.getElementById("progress");
+      const quizBox = document.getElementById("quiz-box");
+      const resultBox = document.getElementById("result-box");
+      const finalScoreEl = document.getElementById("final-score");
+      const finalMsgEl = document.getElementById("final-message");
+
+      // --- FUNCTIONS ---
+
+      function loadQuestion() {
+        feedbackEl.textContent = "";
+        feedbackEl.className = "feedback-msg";
+        nextBtn.style.display = "none";
+        optionsEl.innerHTML = "";
+
+        const data = quizData[currentQuestionIndex];
+
+        // Update Progress
+        const progress = (currentQuestionIndex / quizData.length) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        questionEl.textContent = data.question;
+
+        data.options.forEach((opt, index) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(index, btn);
+          optionsEl.appendChild(btn);
+        });
+      }
+
+      function checkAnswer(selectedIndex, selectedBtn) {
+        const correctIndex = quizData[currentQuestionIndex].correct;
+        const buttons = optionsEl.querySelectorAll(".option-btn");
+
+        buttons.forEach((btn) => (btn.disabled = true));
+
+        if (selectedIndex === correctIndex) {
+          score++;
+          selectedBtn.classList.add("correct");
+          const randomPraise = appreciationPhrases[Math.floor(Math.random() * appreciationPhrases.length)];
+          feedbackEl.textContent = randomPraise;
+          feedbackEl.classList.add("success-msg");
+
+          quizBox.classList.add("appreciation-anim");
+          setTimeout(() => quizBox.classList.remove("appreciation-anim"), 500);
+        } else {
+          selectedBtn.classList.add("wrong");
+          buttons[correctIndex].classList.add("correct");
+          feedbackEl.textContent = "Oops! The correct answer is highlighted in green.";
+          feedbackEl.classList.add("error-msg");
+        }
+
+        nextBtn.style.display = "inline-block";
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+          loadQuestion();
+        } else {
+          showResults();
+        }
+      }
+
+      function showResults() {
+        quizBox.style.display = "none";
+        resultBox.style.display = "block";
+
+        finalScoreEl.textContent = `${score} / ${quizData.length}`;
+
+        const percentage = (score / quizData.length) * 100;
+        if (percentage === 100) {
+          finalMsgEl.textContent = "🏆 Outstanding! You are a Certified Cyber Expert!";
+        } else if (percentage >= 80) {
+          finalMsgEl.textContent = "👏 Great job! You have very strong security habits.";
+        } else if (percentage >= 50) {
+          finalMsgEl.textContent = "👍 Good start! Review the safety tips to improve.";
+        } else {
+          finalMsgEl.textContent = "📚 Keep learning! Online safety is very important.";
+        }
+      }
+
+      function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultBox.style.display = "none";
+        quizBox.style.display = "block";
+        loadQuestion();
+      }
+
+      // Start
+      loadQuestion();
+    </script>
+  </body>
+</html>
